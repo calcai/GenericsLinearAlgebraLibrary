@@ -1,14 +1,15 @@
-package Matrix;
+package JavaGenericsMatrix;
 
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public record Indexes(Integer row, Integer column) {
+public record Indexes(Integer row, Integer column) implements Comparable<Indexes> {
 
-    private static final Comparator<Indexes> byrow = Comparator.comparingInt(Indexes::row).thenComparing(Indexes::column);
+    public static final Comparator<Indexes> byrow = Comparator.comparingInt(Indexes::row).thenComparing(Indexes::column);
 
-    private static final Comparator<Indexes> bycolumn = Comparator.comparingInt(Indexes::column).thenComparing(Indexes::row);
+    public static final Comparator<Indexes> bycolumn = Comparator.comparingInt(Indexes::column).thenComparing(Indexes::row);
 
     public static final Indexes ORIGIN = new Indexes(0, 0);
 
@@ -20,14 +21,16 @@ public record Indexes(Integer row, Integer column) {
         return new Indexes(this.row, column);
     }
 
-    public int compareByRow(Indexes index){
-        return byrow.compare(this, index);
+    public int compareTo(Indexes other) {
+        int rowComparison = Integer.compare(this.row(), other.row());
+        if (rowComparison != 0) {
+            return rowComparison;
+        }
+        return Integer.compare(this.column(), other.column());
     }
 
     public <S> S value (S[][] matrix){
-        if (matrix == null ){
-            throw new IllegalArgumentException("Illegal matrix argument");
-        }
+        Objects.requireNonNull(matrix);
         if (this.row - 1 > matrix.length){
             throw new ArrayIndexOutOfBoundsException("Row index is out of bounds of input matrix");
         }
@@ -37,14 +40,18 @@ public record Indexes(Integer row, Integer column) {
         return matrix[this.row][this.column];
     }
 
+    public <S> S value(Matrix<Indexes, S> matrix){
+        Objects.requireNonNull(matrix);
+        return matrix.value(new Indexes(this.row, this.column));
+    }
+
     public boolean areDiagonal(){
         return this.row == this.column;
     }
 
     public static Stream<Indexes> stream(Indexes from, Indexes to) {
-        if (from == null || to == null) {
-            throw new IllegalArgumentException("Illegal index input");
-        }
+        Objects.requireNonNull(from);
+        Objects.requireNonNull(to);
 
         return IntStream.range(from.row(), to.row())
                 .boxed()
@@ -56,9 +63,7 @@ public record Indexes(Integer row, Integer column) {
     }
 
     public static Stream<Indexes> stream(Indexes size){
-        if (size == null) {
-            throw new IllegalArgumentException("Illegal size input");
-        }
+        Objects.requireNonNull(size);
         return stream(ORIGIN, size);
     }
 

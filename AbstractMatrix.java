@@ -1,7 +1,9 @@
-package Matrix;
+package JavaGenericsMatrix;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.TreeMap;
 
 public abstract class AbstractMatrix<I,T> implements Matrix<I,T> {
@@ -17,9 +19,7 @@ public abstract class AbstractMatrix<I,T> implements Matrix<I,T> {
 
     @Override
     public T value(I index){
-        if (index == null){
-            throw new IllegalArgumentException("Illegal index argument");
-        }
+        Objects.requireNonNull(index);
         return this.matrix.get(index);
     }
 
@@ -32,5 +32,7 @@ public abstract class AbstractMatrix<I,T> implements Matrix<I,T> {
     public NavigableMap<I, T> representation(){
         return new TreeMap<>(this.matrix);
     }
+
+    public abstract PeekingIterator<Map.Entry<I,T>> peekingIterator();
 
 }

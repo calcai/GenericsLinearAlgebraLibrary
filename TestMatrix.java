@@ -1,8 +1,9 @@
-package Matrix;
+package JavaGenericsMatrix;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import java.util.Map.Entry;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -12,28 +13,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TestMatrix {
-
-    // AbstractMatrix Tests
-    @Test
-    public void testAbstractMatrix() {
-        NavigableMap<Integer, String> test = new TreeMap<>();
-        test.put(0, "A");
-        test.put(1, "B");
-
-        AbstractMatrix<Integer, String> matrix = new AbstractMatrix<>(test, "0") {};
-
-        assertEquals(test, matrix.representation());
-        assertEquals("A", matrix.value(0));
-        assertEquals("B", matrix.value(1));
-        assertEquals("0", matrix.zero());
-    }
-
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testNullValue() {
-        AbstractMatrix<Integer, String> matrix = new AbstractMatrix<>(new TreeMap<>(), "0") {};
-        matrix.value(null);
-    }
 
     // NavigableVector Tests
     @Test(expected = NullPointerException.class)
@@ -78,7 +57,7 @@ public class TestMatrix {
         Indexes index1 = new Indexes(4, 0);
         Indexes index2 = new Indexes(5, 9);
 
-        int result = index1.compareByRow(index2);
+        int result = index1.compareTo(index2);
 
         assertTrue(result < 0); 
     }
@@ -138,6 +117,41 @@ public class TestMatrix {
                 new Indexes(1, 0), new Indexes(1, 1), new Indexes(1, 2)), result);
     }
 
+    @Test
+    public void testValue(){
+        NavigableMap<Indexes, Integer> matrix = new TreeMap<>();
+        matrix.put(new Indexes(0, 0), 1);
+        matrix.put(new Indexes(1, 1), 2);
+        NavigableMatrix<Integer> navMatrix = NavigableMatrix.from(matrix, 0);
+        Indexes index = new Indexes(0, 0);
+
+        int value = index.value(navMatrix);
+        assertEquals(1, value);
+    }
+    @Test
+    public void testMerge() {
+        NavigableMap<Indexes, Integer> matrix1 = new TreeMap<>();
+        matrix1.put(new Indexes(0, 0), 1);
+        matrix1.put(new Indexes(1, 1), 2);
+        matrix1.put(new Indexes(2, 2), 3);
+        NavigableMatrix<Integer> navigableMatrix1 = NavigableMatrix.from(matrix1, 0);
+
+        NavigableMap<Indexes, Integer> matrix2 = new TreeMap<>();
+        matrix2.put(new Indexes(0, 0), 4);
+        matrix2.put(new Indexes(1, 1), 5);
+        matrix2.put(new Indexes(2, 2), 6);
+        NavigableMatrix<Integer> navigableMatrix2 = NavigableMatrix.from(matrix2, 0);
+
+        NavigableMatrix<Integer> mergedMatrix = navigableMatrix1.merge(navigableMatrix2, Integer::sum);
+
+        NavigableMap<Indexes, Integer> expectedMatrix = new TreeMap<>();
+        expectedMatrix.put(new Indexes(0, 0), 5);
+        expectedMatrix.put(new Indexes(1, 1), 7);
+        expectedMatrix.put(new Indexes(2, 2), 9);
+
+        // Assert that the merged matrix matches the expected matrix
+        assertEquals(expectedMatrix, mergedMatrix.representation());
+    }
 
 }
 
