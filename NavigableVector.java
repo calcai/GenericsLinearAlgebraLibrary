@@ -34,6 +34,4 @@ public class NavigableVector<T> extends AbstractMatrix<Integer, T> {
         InconsistentZeroException.requireMatching(this, other);
         return NavigableVector.from(MapMerger.merge(this.peekingIterator(), other.peekingIterator(),Comparator.naturalOrder(), op, 0, this.zero()), this.zero());
     }
-
-    
 }

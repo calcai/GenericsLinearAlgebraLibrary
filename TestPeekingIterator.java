@@ -26,7 +26,6 @@ public class TestPeekingIterator {
 
     @Test(expected = NoSuchElementException.class)
     public void testNextNoSuchElementException() {
-        //use assert throws instead of expected =...
         List<Integer> list = Arrays.asList(1);
         Iterator<Integer> iterator = list.iterator();
         PeekingIterator<Integer> peekingIterator = PeekingIterator.from(iterator);

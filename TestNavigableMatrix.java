@@ -2,6 +2,7 @@ package JavaGenericsMatrix;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -127,4 +128,40 @@ public class TestNavigableMatrix {
 
         assertEquals(expectedMatrix, mergedMatrix.representation());
     }
+
+    @Test
+    public void testRowAndColumn() {
+        NavigableMap<Indexes, Integer> m = new TreeMap<>();
+        m.put(new Indexes(0, 0), 1);
+        m.put(new Indexes(0, 1), 2);
+        m.put(new Indexes(0, 2), 3);
+        m.put(new Indexes(1, 0), 4);
+        m.put(new Indexes(1, 1), 5);
+        m.put(new Indexes(1, 2), 6);
+
+        NavigableMatrix<Integer> matrix = NavigableMatrix.from(m, 0);
+
+        NavigableVector<Integer> row0 = matrix.row(0);
+        NavigableVector<Integer> row1 = matrix.row(1);
+        NavigableVector<Integer> col0 = matrix.column(0);
+        NavigableVector<Integer> col1 = matrix.column(1);
+        NavigableVector<Integer> col2 = matrix.column(2);
+
+        System.out.println(matrix.matrixByColumns);
+        System.out.println(matrix.matrixByRows);
+
+        assertEquals(1, row0.value(0).intValue());
+        assertEquals(2, row0.value(1).intValue());
+        assertEquals(3, row0.value(2).intValue());
+        assertEquals(4, row1.value(0).intValue());
+        assertEquals(5, row1.value(1).intValue());
+        assertEquals(6, row1.value(2).intValue());
+        assertEquals(1, col0.value(0).intValue());
+        assertEquals(4, col0.value(1).intValue());
+        assertEquals(2, col1.value(0).intValue());
+        assertEquals(5, col1.value(1).intValue());
+        assertEquals(3, col2.value(0).intValue());
+        assertEquals(6, col2.value(1).intValue());
+    }
+
 }

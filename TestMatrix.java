@@ -3,7 +3,6 @@ package JavaGenericsMatrix;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import java.util.Map.Entry;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +37,6 @@ public class TestMatrix {
     //Indexes tests
     @Test
     public void testWithRowAndWithColumn() {
-        // Arrange
         Indexes index = new Indexes(2, 3);
 
         Indexes index1 = index.withRow(7);
@@ -149,7 +147,6 @@ public class TestMatrix {
         expectedMatrix.put(new Indexes(1, 1), 7);
         expectedMatrix.put(new Indexes(2, 2), 9);
 
-        // Assert that the merged matrix matches the expected matrix
         assertEquals(expectedMatrix, mergedMatrix.representation());
     }
 

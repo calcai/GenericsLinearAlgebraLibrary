@@ -8,7 +8,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.Map.Entry;
 
-public final class MapMerger{
+final class MapMerger{
 
     private static record MergeParameters<K,V>(K index, V x, V y ){
         public MergeParameters<K,V> setX(Map.Entry<K,V> contents){
@@ -28,14 +28,11 @@ public final class MapMerger{
             V zero) {
 
         NavigableMap<K, V> merged = new TreeMap<>();
-        //get rid of zeros later
         while (itThis.hasNext() || itOther.hasNext()) {
             MergeParameters<K, V> mergeParameters = new MergeParameters<>(origin, zero, zero);
             mergeParameters = chooseStep(itThis, itOther, comparator, mergeParameters, zero);
             V value = op.apply(mergeParameters.x(), mergeParameters.y());
-            if (!value.equals(zero)) {
-                merged.put(mergeParameters.index(), value);
-            }
+            merged.put(mergeParameters.index(), value);
             iterate(itThis, itOther);
         }
         return merged;
@@ -96,8 +93,6 @@ public final class MapMerger{
             }
             return stepParameters(itThis, itOther, comparator, mergeParameters);
     }
-
-
 
     //helper method to get entry from iterator
     public static <K,V> Entry<K,V> getEntry(PeekingIterator<Entry<K,V>> iterator){
