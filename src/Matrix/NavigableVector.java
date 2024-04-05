@@ -1,4 +1,4 @@
-package JavaGenericsMatrix;
+package Matrix;
 
 import java.util.Comparator;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package JavaGenericsMatrix;
+package Matrix;
 
 import static org.junit.Assert.*;
 import org.junit.Test;

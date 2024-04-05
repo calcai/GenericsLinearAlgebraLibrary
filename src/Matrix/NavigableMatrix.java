@@ -1,4 +1,4 @@
-package JavaGenericsMatrix;
+package Matrix;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -113,7 +113,7 @@ public class NavigableMatrix <T> implements Matrix<Indexes, T> {
     
         return instance(matrix.length, matrix[0].length, valueMapper, zero);
     }
-
+    
     public NavigableVector<T> row(int i) {
         Map<Integer, T> filteredMap = matrixByRows.entrySet()
                 .stream()

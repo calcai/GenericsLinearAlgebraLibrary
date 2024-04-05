@@ -1,4 +1,4 @@
-package JavaGenericsMatrix;
+package Matrix;
 
 public final class InconsistentZeroException extends Exception{
 
