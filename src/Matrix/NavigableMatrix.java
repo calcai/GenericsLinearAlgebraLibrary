@@ -143,6 +143,12 @@ public class NavigableMatrix <T> implements Matrix<Indexes, T> {
         return NavigableMatrix.from(MapMerger.merge(this.peekingIterator(), other.peekingIterator(), Indexes.byrow, op, Indexes.ORIGIN, zero), zero);
     }
 
+    public int[] size(){
+        Integer numRows = matrixByRows.lastEntry().getKey().row();
+        Integer numCols = matrixByColumns.lastEntry().getKey().column();
+        return new int[]{numRows, numCols};
+    }
+
     public static class InvalidLengthException extends Exception{
 
         private static final long serialVersionUID = 012L;
@@ -173,5 +179,6 @@ public class NavigableMatrix <T> implements Matrix<Indexes, T> {
             }
             return length;
         }
+
     }
 }
