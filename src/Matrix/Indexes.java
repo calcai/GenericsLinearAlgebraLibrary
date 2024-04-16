@@ -57,6 +57,13 @@ public record Indexes(Integer row, Integer column) implements Comparable<Indexes
         return this.row == this.column;
     }
 
+    public boolean equals(Indexes index){
+        if (this.row().equals(index.row()) && this.column().equals(index.column())){
+            return true;
+        }
+        return false;
+    }
+
     public static Stream<Indexes> stream(Indexes from, Indexes to) {
         Objects.requireNonNull(from);
         Objects.requireNonNull(to);
@@ -79,5 +86,4 @@ public record Indexes(Integer row, Integer column) implements Comparable<Indexes
         return stream(ORIGIN, new Indexes(rows, columns));
     }
 
-    
 }

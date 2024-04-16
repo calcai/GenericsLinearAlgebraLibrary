@@ -39,4 +39,20 @@ public class TestNavigableVector {
         assertEquals(expectedVector.representation(), mergedVector.representation());
     }
 
+    @Test
+    public void testEntryWiseMultiplication(){
+        NavigableVector<Integer> vector1 = NavigableVector.from(Map.of(1, 1, 2, 2, 3, 3), 0);
+        NavigableVector<Integer> vector2 = NavigableVector.from(Map.of(1, 2, 3, 3), 0);
+        NavigableVector<Integer> productVector = vector1.entryWiseMultiplication(vector2, BinaryOperations::multiply);
+        NavigableVector<Integer> expectedVector = NavigableVector.from(Map.of(1, 2, 3, 9), 0);
+        assertEquals(expectedVector.representation(), productVector.representation());
+    }
+
+    @Test
+    public void testMultiply(){
+        NavigableVector<Integer> vector1 = NavigableVector.from(Map.of(1, 1, 2, 2, 3, 3), 0);
+        NavigableVector<Integer> vector2 = NavigableVector.from(Map.of(1, 2, 3, 3), 0).transpose();
+        Integer product = vector1.multiply(vector2, BinaryOperations::multiply, BinaryOperations::add).value(0);
+        assertEquals(Integer.valueOf(11), product);
+    }
 }

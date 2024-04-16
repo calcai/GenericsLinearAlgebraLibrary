@@ -33,7 +33,6 @@ final class MapMerger{
             mergeParameters = chooseStep(itThis, itOther, comparator, mergeParameters, zero);
             V value = op.apply(mergeParameters.x(), mergeParameters.y());
             merged.put(mergeParameters.index(), value);
-            iterate(itThis, itOther);
         }
         return merged;
     }
@@ -51,7 +50,7 @@ final class MapMerger{
 
             int comparison = comparator.compare(entryThis.getKey(), entryOther.getKey());
             if(comparison == 0){
-                return mergeParameters.setX(entryThis).setY(entryOther);
+                return mergeParameters.setX(itThis.next()).setY(itOther.next());
             }
             else if (comparison < 0){
                 return stepParameters(itThis, parameters);
@@ -65,17 +64,9 @@ final class MapMerger{
     private static <K,V> MergeParameters<K,V> stepParameters(
         PeekingIterator <Entry<K, V>> iterator,
         Function<Entry<K, V>, MergeParameters<K, V>> parameters){
-            return parameters.apply(iterator.peek().get());
+            return parameters.apply(iterator.next());
         }
     
-    public static <K,V> void iterate(PeekingIterator<Entry<K,V>> itThis, PeekingIterator<Entry<K,V>> itOther){
-        if (itThis.hasNext()){
-            itThis.next();
-        }
-        if (itOther.hasNext()){
-            itOther.next();
-        }
-    }
 
     //helper method to determine which method to use
     private static <K,V> MergeParameters<K,V> chooseStep(

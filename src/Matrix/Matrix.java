@@ -8,7 +8,7 @@ public interface Matrix<I, T> {
 
     T value(I index);
 
-    T zero();
+    T zero();    
     
     NavigableMap<I, T> representation();
 

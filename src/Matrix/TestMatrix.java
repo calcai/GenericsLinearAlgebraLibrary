@@ -16,22 +16,7 @@ public class TestMatrix {
     // NavigableVector Tests
     @Test(expected = NullPointerException.class)
     public void testNullFrom() {
-        NavigableVector.from((Map<Integer, String>) null, "0");
-    }
-
-    @Test
-    public void testFrom() {
-        Map<Integer, String> test = new TreeMap<>();
-        test.put(0, "A");
-        test.put(1, "B");
-        test.put(2, "0");
-
-        NavigableVector<String> vector = NavigableVector.from(test, "0");
-
-        assertEquals("A", vector.value(0));
-        assertEquals("B", vector.value(1));
-        assertNull(vector.value(2));
-        assertEquals("0", vector.zero());
+        NavigableVector.from((Map<Integer, Integer>) null, 0);
     }
 
     //Indexes tests
@@ -120,7 +105,7 @@ public class TestMatrix {
         NavigableMap<Indexes, Integer> matrix = new TreeMap<>();
         matrix.put(new Indexes(0, 0), 1);
         matrix.put(new Indexes(1, 1), 2);
-        NavigableMatrix<Integer> navMatrix = NavigableMatrix.from(matrix, 0);
+        AbstractMatrix<Indexes, Integer> navMatrix = NavigableMatrix.from(matrix, 0);
         Indexes index = new Indexes(0, 0);
 
         int value = index.value(navMatrix);
@@ -132,15 +117,15 @@ public class TestMatrix {
         matrix1.put(new Indexes(0, 0), 1);
         matrix1.put(new Indexes(1, 1), 2);
         matrix1.put(new Indexes(2, 2), 3);
-        NavigableMatrix<Integer> navigableMatrix1 = NavigableMatrix.from(matrix1, 0);
+        AbstractMatrix<Indexes, Integer> navMatrix = NavigableMatrix.from(matrix1, 0);
 
         NavigableMap<Indexes, Integer> matrix2 = new TreeMap<>();
         matrix2.put(new Indexes(0, 0), 4);
         matrix2.put(new Indexes(1, 1), 5);
         matrix2.put(new Indexes(2, 2), 6);
-        NavigableMatrix<Integer> navigableMatrix2 = NavigableMatrix.from(matrix2, 0);
+        AbstractMatrix<Indexes, Integer> navMatrix2 = NavigableMatrix.from(matrix2, 0);
 
-        NavigableMatrix<Integer> mergedMatrix = navigableMatrix1.merge(navigableMatrix2, Integer::sum);
+        Matrix<Indexes, Integer> mergedMatrix = navMatrix.merge(navMatrix2, Integer::sum);
 
         NavigableMap<Indexes, Integer> expectedMatrix = new TreeMap<>();
         expectedMatrix.put(new Indexes(0, 0), 5);
