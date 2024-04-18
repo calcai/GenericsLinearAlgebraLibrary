@@ -1,6 +1,5 @@
 package Matrix;
 
-import java.security.InvalidParameterException;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -138,7 +137,7 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
         return NavigableVector.from(filteredMap, zero).transpose(); 
     }
     
-    
+
     @Override
     public PeekingIterator<Map.Entry<Indexes, T>> peekingIterator(){
         return PeekingIterator.from(this.representation().entrySet().iterator());
@@ -160,18 +159,14 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
     @Override
     public AbstractMatrix<Indexes, T> entryWiseMultiplication(AbstractMatrix<Indexes, T> multiplier, BinaryOperator<T> multiply){
         InvalidMatrixOperationException.requireSameMatrixSizes(this.size(), multiplier.size());
-        if(!multiplier.size().equals(this.size())){
-            throw new InvalidParameterException("Vectors must be the same size");
-        }
+        InconsistentZeroException.requireMatching(this, multiplier);
         return this.merge(multiplier, multiply);
     }
 
     @Override
     public AbstractMatrix<Indexes, T> multiply(AbstractMatrix<Indexes, T> multiplier, BinaryOperator<T> multiply, BinaryOperator<T> add){
         InvalidMatrixOperationException.requireMultipliableMatrices(this.size(), multiplier.size());
-        if(!size().equals(multiplier.transpose().size())){
-            throw new InvalidParameterException("Matrix dimensions are not multipliable");
-        }
+        InconsistentZeroException.requireMatching(this, multiplier);
         Function<Indexes, T> valueMapper = index -> {
             return this.row(index.row()).multiply(multiplier.column(index.column()), add, multiply).value(0);
         };
@@ -192,14 +187,6 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
         public InvalidLengthException (Cause cause, int length){
             this.cause = cause;
             this.length = length;
-        }
-
-        public Cause getCauseCategory(){
-            return this.cause;
-        }
-        
-        public int getLength(){
-            return this.length;
         }
 
         public static int requireNonEmpty(Cause cause, int length){

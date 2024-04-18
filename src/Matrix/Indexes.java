@@ -29,14 +29,6 @@ public record Indexes(Integer row, Integer column) implements Comparable<Indexes
         return Integer.compare(this.column(), other.column());
     }
 
-    public int compareToColumn(Indexes other) {
-        int rowComparison = Integer.compare(this.column(), other.column());
-        if (rowComparison != 0) {
-            return rowComparison;
-        }
-        return Integer.compare(this.column(), other.column());
-    }
-
     public <S> S value (S[][] matrix){
         Objects.requireNonNull(matrix);
         if (this.row - 1 > matrix.length){

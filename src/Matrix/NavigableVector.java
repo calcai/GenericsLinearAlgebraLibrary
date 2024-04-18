@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Objects;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.BinaryOperator;
 
@@ -38,19 +37,17 @@ public class NavigableVector<T> extends AbstractMatrix<Integer, T> {
         return NavigableVector.from(MapMerger.merge(this.peekingIterator(), other.peekingIterator(),Comparator.naturalOrder(), op, 0, this.zero()), this.zero());
     }
 
-    public Set<Integer> keySet(){
-        return this.matrix.keySet();
-    }
-
     @Override
     public NavigableVector<T> entryWiseMultiplication(AbstractMatrix<Integer, T> multiplier, BinaryOperator<T> multiply){
         InvalidMatrixOperationException.requireSameMatrixSizes(this.size(), multiplier.size());
+        InconsistentZeroException.requireMatching(this, multiplier);
         return this.merge(multiplier, multiply);
     }
 
     @Override
     public AbstractMatrix<Integer, T> multiply(AbstractMatrix<Integer ,T> multiplier, BinaryOperator<T> multiply, BinaryOperator<T> add){
         InvalidMatrixOperationException.requireMultipliableMatrices(this.size(), multiplier.size());
+        InconsistentZeroException.requireMatching(this, multiplier);
         NavigableVector<T> entryWise = entryWiseMultiplication(multiplier.transpose(), multiply);
         Map<Integer, T> result = new TreeMap<>();
         result.put(0, entryWise.matrix.values().stream().reduce(zero(), add));
@@ -64,33 +61,22 @@ public class NavigableVector<T> extends AbstractMatrix<Integer, T> {
         return this;
     }
 
-    public NavigableVector<T> fillZeros(){
-        NavigableMap<Integer, T> result = new TreeMap<Integer, T>();
-        for(int i = this.matrix.firstEntry().getKey(); i < this.matrix.lastEntry().getKey(); i++){
-            if(matrix.containsKey(i)){
-                result.put(i, matrix.get(i));
-            }
-            else{
-                result.put(i, zero());
-            }
-        }
-        return from(result, zero());
-    }
-
     @Override
     public NavigableVector<T> row(Integer row) {
-        InvalidMatrixOperationException.requireValidVectorSize(new Indexes(row, this.size().column()), this.size());
-        return this;
+        InvalidMatrixOperationException.requireValidVectorInput(new Indexes(row, this.size().column()), this.size());
+        NavigableMap<Integer, T> rowMap = new TreeMap<>();
+        rowMap.putAll(this.matrix.subMap(row, true, row, true));
+        return new NavigableVector<>(rowMap, this.zero(), 1, this.getColumns());
     }
-
+    
     @Override
     public NavigableVector<T> column(Integer column) {
-        InvalidMatrixOperationException.requireValidVectorSize(new Indexes(1, this.size().column()), this.size());
+        InvalidMatrixOperationException.requireValidVectorInput(new Indexes(this.size().row(), column), this.size());
         NavigableMap<Integer, T> columnMap = new TreeMap<>();
         for (Integer rowIndex : this.matrix.keySet()) {
             columnMap.put(rowIndex, this.value(column));
         }
         return new NavigableVector<>(columnMap, this.zero(), this.getRows(), 1);
     }
-
+    
 }

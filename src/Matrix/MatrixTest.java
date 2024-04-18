@@ -11,7 +11,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class TestMatrix {
+public class MatrixTest {
 
     // NavigableVector Tests
     @Test(expected = NullPointerException.class)

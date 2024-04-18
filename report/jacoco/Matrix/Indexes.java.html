@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Indexes.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">matrix</a> &gt; <a href="index.source.html" class="el_package">Matrix</a> &gt; <span class="el_source">Indexes.java</span></div><h1>Indexes.java</h1><pre class="source lang-java linenums">package Matrix;
+
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+<span class="fc" id="L8">public record Indexes(Integer row, Integer column) implements Comparable&lt;Indexes&gt; {</span>
+
+<span class="fc" id="L10">    public static final Comparator&lt;Indexes&gt; byrow = Comparator.comparingInt(Indexes::row).thenComparing(Indexes::column);</span>
+
+<span class="fc" id="L12">    public static final Comparator&lt;Indexes&gt; bycolumn = Comparator.comparingInt(Indexes::column).thenComparing(Indexes::row);</span>
+
+<span class="fc" id="L14">    public static final Indexes ORIGIN = new Indexes(0, 0);</span>
+
+    public Indexes withRow(int row){
+<span class="fc" id="L17">        return new Indexes(row, this.column);</span>
+    }
+
+    public Indexes withColumn(int column){
+<span class="fc" id="L21">        return new Indexes(this.row, column);</span>
+    }
+
+    public int compareTo(Indexes other) {
+<span class="fc" id="L25">        int rowComparison = Integer.compare(this.row(), other.row());</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        if (rowComparison != 0) {</span>
+<span class="fc" id="L27">            return rowComparison;</span>
+        }
+<span class="fc" id="L29">        return Integer.compare(this.column(), other.column());</span>
+    }
+
+    public &lt;S&gt; S value (S[][] matrix){
+<span class="fc" id="L33">        Objects.requireNonNull(matrix);</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (this.row - 1 &gt; matrix.length){</span>
+<span class="fc" id="L35">            throw new ArrayIndexOutOfBoundsException(&quot;Row index is out of bounds of input matrix&quot;);</span>
+        }
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if (this.column - 1 &gt; matrix[0].length){</span>
+<span class="fc" id="L38">            throw new ArrayIndexOutOfBoundsException(&quot;Column index is out of bounds of input matrix&quot;);</span>
+        }
+<span class="fc" id="L40">        return matrix[this.row][this.column];</span>
+    }
+
+    public &lt;S&gt; S value(Matrix&lt;Indexes, S&gt; matrix){
+<span class="fc" id="L44">        Objects.requireNonNull(matrix);</span>
+<span class="fc" id="L45">        return matrix.value(new Indexes(this.row, this.column));</span>
+    }
+
+    public boolean areDiagonal(){
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        return this.row == this.column;</span>
+    }
+
+    public boolean equals(Indexes index){
+<span class="fc bfc" id="L53" title="All 4 branches covered.">        if (this.row().equals(index.row()) &amp;&amp; this.column().equals(index.column())){</span>
+<span class="fc" id="L54">            return true;</span>
+        }
+<span class="fc" id="L56">        return false;</span>
+    }
+
+    public static Stream&lt;Indexes&gt; stream(Indexes from, Indexes to) {
+<span class="fc" id="L60">        Objects.requireNonNull(from);</span>
+<span class="fc" id="L61">        Objects.requireNonNull(to);</span>
+
+<span class="fc" id="L63">        return IntStream.range(from.row(), to.row())</span>
+<span class="fc" id="L64">                .boxed()</span>
+<span class="fc" id="L65">                .flatMap(row -&gt; IntStream.range(</span>
+<span class="fc" id="L66">                        (from.column()),</span>
+<span class="fc" id="L67">                        (to.column()))</span>
+<span class="fc" id="L68">                .mapToObj(column -&gt; new Indexes(row, column))</span>
+                );
+    }
+
+    public static Stream&lt;Indexes&gt; stream(Indexes size){
+<span class="fc" id="L73">        Objects.requireNonNull(size);</span>
+<span class="fc" id="L74">        return stream(ORIGIN, size);</span>
+    }
+
+    public static Stream&lt;Indexes&gt; stream(int rows, int columns){
+<span class="fc" id="L78">        return stream(ORIGIN, new Indexes(rows, columns));</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

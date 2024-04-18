@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
-public class TestNavigableMatrix {
+public class NavigableMatrixTest {
 
     @Test
     public void testValue() {
@@ -201,6 +201,32 @@ public class TestNavigableMatrix {
         assertEquals(Integer.valueOf(1), result.value(new Indexes(1, 0)));
         assertEquals(Integer.valueOf(4), result.value(new Indexes(1, 1)));
         assertEquals(Integer.valueOf(9), result.value(new Indexes(1, 2)));
+
     }
 
+    @Test(expected = Exception.class)
+    public void testEntryWiseError() {
+        AbstractMatrix<Indexes, Integer> matrix1 = NavigableMatrix.instance(2, 3, index -> index.row() + index.column(), 0);
+        AbstractMatrix<Indexes, Integer> matrix2 = NavigableMatrix.instance(3, 2, index -> index.row() + index.column(), 0);
+        matrix1.entryWiseMultiplication(matrix2, BinaryOperations::multiply);
+    }
+
+    @Test(expected = Exception.class)
+    public void testMultiplyError() {
+        AbstractMatrix<Indexes, Integer> matrix1 = NavigableMatrix.instance(2, 3, index -> index.row() + index.column(), 0);
+        AbstractMatrix<Indexes, Integer> matrix2 = NavigableMatrix.instance(2, 3, index -> index.row() + index.column(), 0);
+        matrix1.multiply(matrix2, BinaryOperations::multiply, BinaryOperations::add);
+    }
+
+    @Test(expected = Exception.class)
+    public void testInvalidLength(){
+        NavigableMatrix.instance(0, 3, index -> index.row() + index.column(), 0);
+    }
+
+    @Test(expected = Exception.class)
+    public void testInconsistentZero(){
+        AbstractMatrix<Indexes, Integer> m1 = NavigableMatrix.instance(3, 3, index -> index.row() + index.column(), 0);
+        AbstractMatrix<Indexes, Integer> m2 = NavigableMatrix.instance(3, 3, index -> index.row() + index.column(), 1);
+        m1.entryWiseMultiplication(m2, BinaryOperations::multiply);
+    }
 }
