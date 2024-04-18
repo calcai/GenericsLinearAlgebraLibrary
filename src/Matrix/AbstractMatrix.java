@@ -13,8 +13,10 @@ public abstract class AbstractMatrix<I,T> implements Matrix<I,T> {
 
     private final T zero;
 
+    //number of rows in abstract matrix
     private int rows;
 
+    //number of columns in abstract matrix
     private int columns;
 
     protected AbstractMatrix(NavigableMap<I,T> matrix, T zero, int rows, int columns) {
@@ -43,7 +45,6 @@ public abstract class AbstractMatrix<I,T> implements Matrix<I,T> {
     public int getRows(){
         return this.rows;
     }
-
     public int getColumns(){
         return this.columns;
     }
@@ -71,6 +72,4 @@ public abstract class AbstractMatrix<I,T> implements Matrix<I,T> {
     public abstract AbstractMatrix<I, T> multiply(AbstractMatrix<I, T> multiplier, BinaryOperator<T> multiply, BinaryOperator<T> add);
 
     public abstract AbstractMatrix<I, T> entryWiseMultiplication(AbstractMatrix<I, T> multiplier, BinaryOperator<T> multiply);
-
-
 }

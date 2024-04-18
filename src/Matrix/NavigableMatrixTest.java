@@ -3,6 +3,7 @@ package Matrix;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -179,7 +180,7 @@ public class NavigableMatrixTest {
         AbstractMatrix<Indexes, Integer>  matrix1 = NavigableMatrix.instance(2, 3, index -> index.row() + index.column(), 0);
         AbstractMatrix<Indexes, Integer>  matrix2 = NavigableMatrix.instance(3, 2, index -> index.row() + index.column(), 0);
 
-        AbstractMatrix<Indexes, Integer> result = matrix1.multiply(matrix2, BinaryOperations::add, BinaryOperations::multiply);
+        AbstractMatrix<Indexes, Integer> result = matrix1.multiply(matrix2, BinaryOperations::multiply, BinaryOperations::add);
 
         // Test the values of the result matrix
         assertEquals(Integer.valueOf(5), result.value(new Indexes(0, 0)));
@@ -228,5 +229,23 @@ public class NavigableMatrixTest {
         AbstractMatrix<Indexes, Integer> m1 = NavigableMatrix.instance(3, 3, index -> index.row() + index.column(), 0);
         AbstractMatrix<Indexes, Integer> m2 = NavigableMatrix.instance(3, 3, index -> index.row() + index.column(), 1);
         m1.entryWiseMultiplication(m2, BinaryOperations::multiply);
+    }
+
+    @Test
+    public void testMultipleMultiplicationOperations() {
+        AbstractMatrix<Indexes, Integer> matrix1 = NavigableMatrix.instance(2, 3, index -> index.row() + index.column(), 0);
+        AbstractMatrix<Indexes, Integer> matrix2 = NavigableMatrix.instance(3, 2, index -> index.row() + index.column(), 0);
+        AbstractMatrix<Indexes, Integer> matrix3 = NavigableMatrix.instance(2, 2, index -> index.row() + index.column(), 0);
+
+        AbstractMatrix<Indexes, Integer> result1 = matrix1.multiply(matrix2, BinaryOperations::multiply, BinaryOperations::add);
+        System.out.println(matrix1.representation());
+        System.out.println(matrix2.representation());
+        System.out.println(result1.representation());
+        AbstractMatrix<Indexes, Integer> finalResult = result1.multiply(matrix3, BinaryOperations::multiply, BinaryOperations::add);
+
+        assertEquals(Integer.valueOf(8), finalResult.value(new Indexes(0, 0)));
+        assertEquals(Integer.valueOf(21), finalResult.value(new Indexes(0, 1)));
+        assertEquals(Integer.valueOf(14), finalResult.value(new Indexes(1, 0)));
+        assertEquals(Integer.valueOf(36), finalResult.value(new Indexes(1, 1)));
     }
 }

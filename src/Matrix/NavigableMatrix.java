@@ -119,7 +119,8 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
     
         return instance(matrix.length, matrix[0].length, valueMapper, zero);
     }
-    
+
+    //returns navigable vector of row representation
     public NavigableVector<T> row(Integer i) {
         Map<Integer, T> filteredMap = matrixByRows.entrySet()
                 .stream()
@@ -128,6 +129,7 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
         return NavigableVector.from(filteredMap, zero); 
     }
     
+    //returns navigable vector of column representation    
     public NavigableVector<T> column(Integer i){
         Map<Indexes, T> matrixByColumns = reorderByColumn(this.matrixByRows);
         Map<Integer, T> filteredMap = matrixByColumns.entrySet()
@@ -149,6 +151,7 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
         return NavigableMatrix.from(MapMerger.merge(this.peekingIterator(), other.peekingIterator(), Indexes.byrow, op, Indexes.ORIGIN, zero), zero);
     }
 
+    //Flips column and row values
     public AbstractMatrix<Indexes, T> transpose(){
         Function<Indexes, T> valueMapper = indexes ->{
             return matrixByRows.get(new Indexes(indexes.column(), indexes.row()));
@@ -156,6 +159,7 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
         return instance(this.getColumns(), this.getRows(), valueMapper, zero());
     }
 
+    //Uses merge operation with multiply instead
     @Override
     public AbstractMatrix<Indexes, T> entryWiseMultiplication(AbstractMatrix<Indexes, T> multiplier, BinaryOperator<T> multiply){
         InvalidMatrixOperationException.requireSameMatrixSizes(this.size(), multiplier.size());
@@ -163,12 +167,13 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
         return this.merge(multiplier, multiply);
     }
 
+    //Calls vector multiplication to multiply each row by corresponding column
     @Override
     public AbstractMatrix<Indexes, T> multiply(AbstractMatrix<Indexes, T> multiplier, BinaryOperator<T> multiply, BinaryOperator<T> add){
         InvalidMatrixOperationException.requireMultipliableMatrices(this.size(), multiplier.size());
         InconsistentZeroException.requireMatching(this, multiplier);
         Function<Indexes, T> valueMapper = index -> {
-            return this.row(index.row()).multiply(multiplier.column(index.column()), add, multiply).value(0);
+            return this.row(index.row()).multiply(multiplier.column(index.column()), multiply, add).value(0);
         };
         return instance(this.getRows(), multiplier.getColumns(), valueMapper, zero());
     }
