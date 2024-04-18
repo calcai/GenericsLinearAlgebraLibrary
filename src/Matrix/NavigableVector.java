@@ -37,6 +37,7 @@ public class NavigableVector<T> extends AbstractMatrix<Integer, T> {
         return NavigableVector.from(MapMerger.merge(this.peekingIterator(), other.peekingIterator(),Comparator.naturalOrder(), op, 0, this.zero()), this.zero());
     }
 
+    //uses merge with multiply, user defined multiply
     @Override
     public NavigableVector<T> entryWiseMultiplication(AbstractMatrix<Integer, T> multiplier, BinaryOperator<T> multiply){
         InvalidMatrixOperationException.requireSameMatrixSizes(this.size(), multiplier.size());
@@ -44,6 +45,7 @@ public class NavigableVector<T> extends AbstractMatrix<Integer, T> {
         return this.merge(multiplier, multiply);
     }
 
+    //Sums up entry wise values of the two matrices, user defined multiply and add
     @Override
     public AbstractMatrix<Integer, T> multiply(AbstractMatrix<Integer ,T> multiplier, BinaryOperator<T> multiply, BinaryOperator<T> add){
         InvalidMatrixOperationException.requireMultipliableMatrices(this.size(), multiplier.size());
@@ -61,6 +63,7 @@ public class NavigableVector<T> extends AbstractMatrix<Integer, T> {
         return this;
     }
 
+    //returns row representation
     @Override
     public NavigableVector<T> row(Integer row) {
         InvalidMatrixOperationException.requireValidVectorInput(new Indexes(row, this.size().column()), this.size());
@@ -69,6 +72,7 @@ public class NavigableVector<T> extends AbstractMatrix<Integer, T> {
         return new NavigableVector<>(rowMap, this.zero(), 1, this.getColumns());
     }
     
+    //returns column representation
     @Override
     public NavigableVector<T> column(Integer column) {
         InvalidMatrixOperationException.requireValidVectorInput(new Indexes(this.size().row(), column), this.size());
