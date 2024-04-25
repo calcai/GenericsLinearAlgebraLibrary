@@ -8,6 +8,10 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.Map.Entry;
 
+
+/**
+ * Class that contains operations to merge matrices
+ */
 final class MapMerger{
 
     private static record MergeParameters<K,V>(K index, V x, V y ){

@@ -6,6 +6,10 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.BinaryOperator;
 
+/**
+ * Abstract class that represents Matrix or vector 
+ */
+
 public abstract class AbstractMatrix<I,T> implements Matrix<I,T> {
 
     protected final NavigableMap<I, T> matrix;

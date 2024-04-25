@@ -5,6 +5,10 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+
+/**
+ * Index representation
+ */
 public record Indexes(Integer row, Integer column) implements Comparable<Indexes> {
 
     public static final Comparator<Indexes> byrow = Comparator.comparingInt(Indexes::row).thenComparing(Indexes::column);

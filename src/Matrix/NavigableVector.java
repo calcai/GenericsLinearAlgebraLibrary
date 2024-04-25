@@ -8,6 +8,10 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.BinaryOperator;
 
+
+/**
+ * Navigable Vector representation
+ */
 public class NavigableVector<T> extends AbstractMatrix<Integer, T> {
 
     private NavigableVector(NavigableMap<Integer,T> matrix, T zero, int rows, int columns){

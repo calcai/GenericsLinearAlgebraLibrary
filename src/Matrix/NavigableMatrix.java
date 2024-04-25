@@ -8,6 +8,10 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+
+/**
+ * Navigable Matrix representation
+ */
 public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
 
     public final NavigableMap<Indexes, T> matrixByRows;
@@ -59,7 +63,7 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
      * @param columns
      * @param value
      * @param zero
-     * @return AbstractMatrix<Indexes, S>
+     * @return AbstractMatrix<Indexes, S> constant matrix
      */
     public static <S> AbstractMatrix<Indexes, S> constant(int rows, int columns, S value, S zero){
         InvalidLengthException.requireNonEmpty(InvalidLengthException.Cause.ROW, rows);
@@ -80,7 +84,7 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
      * @param size
      * @param zero
      * @param identity
-     * @return AbstractMatrix<Indexes, S>
+     * @return AbstractMatrix<Indexes, S> identity matrix
      */
     public static <S> AbstractMatrix<Indexes, S> identity(int size, S zero, S identity){
         Objects.requireNonNull(identity);
@@ -123,7 +127,7 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
 
     
     /** 
-     * Helper method to convert matrixByRows to matrixByColumns, using priority queue
+     * Helper method to convert matrixByRows to matrixByColumns, comparator by column
 
      * 
      * @param matrixByRows
@@ -158,7 +162,7 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
      * Returns row representation of row i as a NavigableVector
      * 
      * @param i
-     * @return NavigableVector<T>
+     * @return NavigableVector<T> row i
      */
     public NavigableVector<T> row(Integer i) {
         Map<Integer, T> filteredMap = matrixByRows.entrySet()
@@ -173,7 +177,7 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
      * Returns column representation of column i as a NavigableVector
      * 
      * @param i
-     * @return NavigableVector<T>
+     * @return NavigableVector<T> column i
      */
     public NavigableVector<T> column(Integer i){
         Map<Indexes, T> matrixByColumns = reorderByColumn(this.matrixByRows);

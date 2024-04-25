@@ -2,6 +2,10 @@ package Matrix;
 
 import java.security.InvalidParameterException;
 
+
+/**
+ * Exception class that ensures matrix operations are valid
+ */
 public class InvalidMatrixOperationException extends Exception {
 
     private static final long serialVersionUID = 01234L;

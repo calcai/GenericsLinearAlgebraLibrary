@@ -4,6 +4,10 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.function.BinaryOperator;
 
+/**
+ * Interface that represents Matrix
+ */
+
 public interface Matrix<I, T> {
 
     T value(I index);

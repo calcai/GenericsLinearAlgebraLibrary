@@ -1,6 +1,9 @@
 package Matrix;
 
 
+/**
+ * Example binary operations
+ */
 public class BinaryOperations<T> {
 
     

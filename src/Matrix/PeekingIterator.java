@@ -5,6 +5,10 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
+
+/**
+ * Iterator that is able to peek ahead
+ */
 public final class PeekingIterator<T> implements Iterator<T> {
 
     private final Iterator<T> it;
