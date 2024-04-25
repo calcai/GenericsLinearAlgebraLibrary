@@ -29,6 +29,8 @@ $ANT_HOME/lib must contain (see Ant-JUnit and JaCoCo installation guides):
   <!--   Directories with the class files -->
   <property name="build.dir" value="build"/>
 
+  <property name="docs.dir" value="docs"/>
+
   <!--   Directories and files with the output -->
   <property name="output.dir" value="output"/>
   <property name="output.file" value="${output.dir}/output.txt"/>
@@ -71,6 +73,7 @@ $ANT_HOME/lib must contain (see Ant-JUnit and JaCoCo installation guides):
     </java>
   </target>
   -->
+
 
   <target name="build">
     <mkdir dir="${build.dir}"/>

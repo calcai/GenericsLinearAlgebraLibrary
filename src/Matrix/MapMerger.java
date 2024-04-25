@@ -19,6 +19,18 @@ final class MapMerger{
         }
     }
 
+    
+    /** 
+     * Returns a navigable map of two peeking iterators merged at each individual index by the binary operation. Empty values are treated as zero.
+     * 
+     * @param itThis
+     * @param itOther
+     * @param comparator
+     * @param op
+     * @param origin
+     * @param zero
+     * @return NavigableMap<K, V>
+     */
     public static <K, V> NavigableMap<K, V> merge(
             PeekingIterator<Entry<K, V>> itThis,
             PeekingIterator<Entry<K, V>> itOther,
@@ -28,15 +40,36 @@ final class MapMerger{
             V zero) {
 
         NavigableMap<K, V> merged = new TreeMap<>();
-        while (itThis.hasNext() || itOther.hasNext()) {
+        // Continue iterating while both peeking iterators are not ended
+        while (itThis.hasNext() && itOther.hasNext()) {
             MergeParameters<K, V> mergeParameters = new MergeParameters<>(origin, zero, zero);
-            mergeParameters = chooseStep(itThis, itOther, comparator, mergeParameters, zero);
+            mergeParameters = stepParameters(itThis, itOther, comparator, mergeParameters);
             V value = op.apply(mergeParameters.x(), mergeParameters.y());
             merged.put(mergeParameters.index(), value);
+        }
+
+        //Iterate remaining values when opposite iterator is done
+        while (itThis.hasNext()){
+            Entry<K,V> thisEntry = itThis.next();
+            merged.put(thisEntry.getKey(), op.apply(thisEntry.getValue(), zero));
+        }
+        while (itOther.hasNext()){
+            Entry<K,V> otherEntry = itOther.next();
+            merged.put(otherEntry.getKey(), op.apply(otherEntry.getValue(), zero));
         }
         return merged;
     }
 
+    
+    /** 
+     * Determine which parameters to merge based on the following values in the iterator
+     * 
+     * @param itThis
+     * @param itOther
+     * @param comparator
+     * @param mergeParameters
+     * @return MergeParameters<K, V>
+     */
     private static <K,V> MergeParameters<K,V> stepParameters(
         PeekingIterator<Entry<K, V>> itThis,
         PeekingIterator<Entry<K, V>> itOther,
@@ -45,13 +78,17 @@ final class MapMerger{
 
             Function<Entry<K, V>, MergeParameters<K, V>> parameters = entry -> mergeParameters.setX(entry);
 
-            Entry<K,V> entryThis = getEntry(itThis);
-            Entry<K,V> entryOther = getEntry(itOther);
+            Entry<K,V> entryThis = itThis.peek().get();
+            Entry<K,V> entryOther = itOther.peek().get();
 
             int comparison = comparator.compare(entryThis.getKey(), entryOther.getKey());
+
+            // Conndition where the two indices are the same, then this and other are the parameters
             if(comparison == 0){
                 return mergeParameters.setX(itThis.next()).setY(itOther.next());
             }
+            
+            // Next two blocks show when one of the indicies are greater, then step the value of the lower parameter
             else if (comparison < 0){
                 return stepParameters(itThis, parameters);
             }
@@ -61,32 +98,18 @@ final class MapMerger{
             
     }
 
+    
+    /** 
+     * Advance the specified iterator, as called by the previous stepParameters method
+     * 
+     * @param iterator
+     * @param parameters
+     * @return MergeParameters<K, V>
+     */
     private static <K,V> MergeParameters<K,V> stepParameters(
         PeekingIterator <Entry<K, V>> iterator,
         Function<Entry<K, V>, MergeParameters<K, V>> parameters){
             return parameters.apply(iterator.next());
         }
-    
 
-    //helper method to determine which method to use
-    private static <K,V> MergeParameters<K,V> chooseStep(
-        PeekingIterator<Entry<K, V>> itThis,
-        PeekingIterator<Entry<K, V>> itOther,
-        Comparator<? super K> comparator,
-        MergeParameters<K, V> mergeParameters,
-        V zero) {
-            Function<Entry<K, V>, MergeParameters<K, V>> parameters = entry -> mergeParameters.setX(entry);
-            if(!itOther.hasNext()) {
-                return stepParameters(itThis, parameters);
-            } 
-            else if (!itThis.hasNext()){
-                return stepParameters(itOther, parameters);
-            }
-            return stepParameters(itThis, itOther, comparator, mergeParameters);
-    }
-
-    //helper method to get entry from iterator
-    public static <K,V> Entry<K,V> getEntry(PeekingIterator<Entry<K,V>> iterator){
-        return iterator.peek().get();
-    }
 }

@@ -1,10 +1,8 @@
 package Matrix;
 
-import java.util.Comparator;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Objects;
-import java.util.PriorityQueue;
 import java.util.TreeMap;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -23,26 +21,22 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
         this.zero = zero;
     }
 
-    @Override
-    public T value(Indexes index) {
-        return matrixByRows.getOrDefault(index, zero);
-    }
-
-    @Override
-    public T zero() {
-        return this.zero;
-    }
-
-    @Override
-    public NavigableMap<Indexes, T> representation() {
-        return new TreeMap<>(this.matrixByRows);
-    }
-
+    
+    /** 
+     * Creates instance of a NavigableMatrix of size (row, column) from function
+     * 
+     * @param rows
+     * @param columns
+     * @param valueMapper
+     * @param zero
+     * @return AbstractMatrix<Indexes, S>
+     */
     public static<S> AbstractMatrix<Indexes, S> instance(int rows, int columns, Function<Indexes, S> valueMapper, S zero){
         InvalidLengthException.requireNonEmpty(InvalidLengthException.Cause.ROW, rows);
         InvalidLengthException.requireNonEmpty(InvalidLengthException.Cause.COLUMN, columns);
         Objects.requireNonNull(valueMapper);
         
+        //Applies valueMapper function parameter on each element on an index between 0 and row and 0 and columns
         NavigableMap<Indexes, S> matrixByRows = new TreeMap<>();
         for(int i = 0; i < rows; i++){
             for(int j = 0; j < columns; j++){
@@ -57,6 +51,16 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
         return result;
     }
 
+    
+    /** 
+     * Returns a constant matrix with all identical values of size (rows, columns)
+     * 
+     * @param rows
+     * @param columns
+     * @param value
+     * @param zero
+     * @return AbstractMatrix<Indexes, S>
+     */
     public static <S> AbstractMatrix<Indexes, S> constant(int rows, int columns, S value, S zero){
         InvalidLengthException.requireNonEmpty(InvalidLengthException.Cause.ROW, rows);
         InvalidLengthException.requireNonEmpty(InvalidLengthException.Cause.COLUMN, columns);
@@ -69,6 +73,15 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
         return instance(rows, columns, valueMapper, zero);
     }
 
+    
+    /** 
+     * Returns an identity matrix containing identity at diagonal Indexes (row = column), of size (size, size)
+     * 
+     * @param size
+     * @param zero
+     * @param identity
+     * @return AbstractMatrix<Indexes, S>
+     */
     public static <S> AbstractMatrix<Indexes, S> identity(int size, S zero, S identity){
         Objects.requireNonNull(identity);
         InvalidLengthException.requireNonEmpty(InvalidLengthException.Cause.ROW, size);
@@ -83,11 +96,21 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
     }
 
 
+    
+    /** 
+     * Creates NavigableMatrix from a Navigable Map
+     * 
+     * @param matrix
+     * @param zero
+     * @return AbstractMatrix<Indexes, S>
+     */
     public static <S> AbstractMatrix<Indexes, S> from(NavigableMap<Indexes, S> matrix, S zero){
+        //Stream that gets size of rows
         int rows = matrix.keySet().stream()
                                 .mapToInt(i -> i.row())
                                 .max()
                                 .getAsInt();
+        //Stream that gets size of columns
         int columns = matrix.keySet().stream()
                                 .mapToInt(i -> i.column())
                                 .max()
@@ -98,19 +121,29 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
         return result;
     }
 
-    //Helper method to convert matrixByRows to matrixByColumns, using priority queue
+    
+    /** 
+     * Helper method to convert matrixByRows to matrixByColumns, using priority queue
+
+     * 
+     * @param matrixByRows
+     * @return NavigableMap<Indexes, S>
+     */
     private static <S> NavigableMap<Indexes, S> reorderByColumn(NavigableMap<Indexes, S> matrixByRows) {
-        NavigableMap<Indexes, S> matrixByColumns = new TreeMap<>();
-        PriorityQueue<Map.Entry<Indexes, S>> pq = new PriorityQueue<>(Comparator.comparing(entry -> entry.getKey().column()));
-        pq.addAll(matrixByRows.entrySet());
-        while (!pq.isEmpty()) {
-            Map.Entry<Indexes, S> entry = pq.poll();
-            matrixByColumns.put(entry.getKey(), entry.getValue()); 
-        }
+        NavigableMap<Indexes, S> matrixByColumns = new TreeMap<>(Indexes.bycolumn);
+        matrixByColumns.putAll(matrixByRows);
         return matrixByColumns;
     }
     
     
+    
+    /** 
+     * Creates matrix from a 2D array
+     * 
+     * @param matrix
+     * @param zero
+     * @return AbstractMatrix<Indexes, S>
+     */
     public static <S> AbstractMatrix<Indexes, S> from(S[][] matrix, S zero){
         Objects.requireNonNull(matrix);
         Function<Indexes, S> valueMapper = indexes -> {
@@ -120,7 +153,13 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
         return instance(matrix.length, matrix[0].length, valueMapper, zero);
     }
 
-    //returns navigable vector of row representation
+    
+    /** 
+     * Returns row representation of row i as a NavigableVector
+     * 
+     * @param i
+     * @return NavigableVector<T>
+     */
     public NavigableVector<T> row(Integer i) {
         Map<Integer, T> filteredMap = matrixByRows.entrySet()
                 .stream()
@@ -129,7 +168,13 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
         return NavigableVector.from(filteredMap, zero); 
     }
     
-    //returns navigable vector of column representation    
+    
+    /** 
+     * Returns column representation of column i as a NavigableVector
+     * 
+     * @param i
+     * @return NavigableVector<T>
+     */
     public NavigableVector<T> column(Integer i){
         Map<Indexes, T> matrixByColumns = reorderByColumn(this.matrixByRows);
         Map<Integer, T> filteredMap = matrixByColumns.entrySet()
@@ -140,18 +185,37 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
     }
     
 
+    
+    /** 
+     * Returns the NavigableMatrix as a PeekingIterator
+     * 
+     * @return PeekingIterator<Entry<Indexes, T>>
+     */
     @Override
     public PeekingIterator<Map.Entry<Indexes, T>> peekingIterator(){
         return PeekingIterator.from(this.representation().entrySet().iterator());
     }
     
+    
+    /** 
+     * Applies a binary operation on each corresponding index of two matrices 
+     * 
+     * @param other
+     * @param op
+     * @return AbstractMatrix<Indexes, T>
+     */
     @Override
     public AbstractMatrix<Indexes, T> merge(Matrix<Indexes, T> other, BinaryOperator<T> op) {
         InconsistentZeroException.requireMatching(this, other);
         return NavigableMatrix.from(MapMerger.merge(this.peekingIterator(), other.peekingIterator(), Indexes.byrow, op, Indexes.ORIGIN, zero), zero);
     }
 
-    //Flips column and row values
+    
+    /** 
+     * Flips row and column indices to return a transposed matrix
+     * 
+     * @return AbstractMatrix<Indexes, T>
+     */
     public AbstractMatrix<Indexes, T> transpose(){
         Function<Indexes, T> valueMapper = indexes ->{
             return matrixByRows.get(new Indexes(indexes.column(), indexes.row()));
@@ -159,6 +223,14 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
         return instance(this.getColumns(), this.getRows(), valueMapper, zero());
     }
 
+    
+    /** 
+     * Multiplies each corresponding index based on user defined binary operator for multiply
+     * 
+     * @param multiplier
+     * @param multiply
+     * @return AbstractMatrix<Indexes, T>
+     */
     //Uses merge operation with multiply instead
     @Override
     public AbstractMatrix<Indexes, T> entryWiseMultiplication(AbstractMatrix<Indexes, T> multiplier, BinaryOperator<T> multiply){
@@ -167,6 +239,15 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
         return this.merge(multiplier, multiply);
     }
 
+    
+    /** 
+     * Uses standard matrix multiplication from this to specified matrix based on user defined multiply and add operators
+     * 
+     * @param multiplier
+     * @param multiply
+     * @param add
+     * @return AbstractMatrix<Indexes, T>
+     */
     //Calls vector multiplication to multiply each row by corresponding column
     @Override
     public AbstractMatrix<Indexes, T> multiply(AbstractMatrix<Indexes, T> multiplier, BinaryOperator<T> multiply, BinaryOperator<T> add){
@@ -188,12 +269,19 @@ public class NavigableMatrix<T> extends AbstractMatrix<Indexes, T> {
         enum Cause {
             ROW, COLUMN;
         }
-
+        
         public InvalidLengthException (Cause cause, int length){
             this.cause = cause;
             this.length = length;
         }
 
+        /** 
+         * Requires a non empty size and returns the length if non empty
+         * 
+         * @param cause
+         * @param length
+         * @return int
+         */
         public static int requireNonEmpty(Cause cause, int length){
             if (length <= 0){
                 throw new IllegalArgumentException(new InvalidLengthException(cause, length));

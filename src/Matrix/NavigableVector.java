@@ -14,6 +14,14 @@ public class NavigableVector<T> extends AbstractMatrix<Integer, T> {
         super(matrix, zero, rows, columns);
     }
     
+    
+    /** 
+     * Creates a NavigableVector from a Map
+     * 
+     * @param vector
+     * @param zero
+     * @return NavigableVector<S>
+     */
     public static <S> NavigableVector<S> from(Map<Integer, S> vector, S zero) {
         Objects.requireNonNull(vector);
         Objects.requireNonNull(zero);
@@ -27,17 +35,38 @@ public class NavigableVector<T> extends AbstractMatrix<Integer, T> {
         return new NavigableVector<S>(navigableMap, zero, rows, columns);
     }
 
+    
+    /** 
+     * Returns the NavigableVector as a PeekingIterator
+     * 
+     * @return PeekingIterator<Entry<Integer, T>>
+     */
     public PeekingIterator<Map.Entry<Integer,T>> peekingIterator(){
         return PeekingIterator.from(this.representation().entrySet().iterator());
     }
 
+    
+    /** 
+     * Applies a binary operation on each corresponding index of two vectors 
+     * 
+     * @param other
+     * @param op
+     * @return NavigableVector<T>
+     */
     @Override
     public NavigableVector<T> merge(Matrix<Integer, T> other, BinaryOperator<T> op) {
         InconsistentZeroException.requireMatching(this, other);
         return NavigableVector.from(MapMerger.merge(this.peekingIterator(), other.peekingIterator(),Comparator.naturalOrder(), op, 0, this.zero()), this.zero());
     }
 
-    //uses merge with multiply, user defined multiply
+    
+    /** 
+     * Multiplies each corresponding index based on user defined binary operator for multiply
+     * 
+     * @param multiplier
+     * @param multiply
+     * @return NavigableVector<T>
+     */
     @Override
     public NavigableVector<T> entryWiseMultiplication(AbstractMatrix<Integer, T> multiplier, BinaryOperator<T> multiply){
         InvalidMatrixOperationException.requireSameMatrixSizes(this.size(), multiplier.size());
@@ -45,7 +74,15 @@ public class NavigableVector<T> extends AbstractMatrix<Integer, T> {
         return this.merge(multiplier, multiply);
     }
 
-    //Sums up entry wise values of the two matrices, user defined multiply and add
+    
+    /** 
+     * Uses standard matrix multiplication from this to specified matrix based on user defined multiply and add operators
+     * 
+     * @param multiplier
+     * @param multiply
+     * @param add
+     * @return AbstractMatrix<Integer, T>
+     */
     @Override
     public AbstractMatrix<Integer, T> multiply(AbstractMatrix<Integer ,T> multiplier, BinaryOperator<T> multiply, BinaryOperator<T> add){
         InvalidMatrixOperationException.requireMultipliableMatrices(this.size(), multiplier.size());
@@ -56,6 +93,12 @@ public class NavigableVector<T> extends AbstractMatrix<Integer, T> {
         return NavigableVector.from(result, zero());
     }
 
+    
+    /** 
+     * Flips row and column indices to return a transposed vector
+     * 
+     * @return NavigableVector<T>
+     */
     public NavigableVector<T> transpose(){
         int rows = this.getRows();
         this.setRows(this.getColumns());
@@ -63,6 +106,13 @@ public class NavigableVector<T> extends AbstractMatrix<Integer, T> {
         return this;
     }
 
+    
+    /** 
+     * Returns row representation of row i as a NavigableVector
+     * 
+     * @param row
+     * @return NavigableVector<T>
+     */
     //returns row representation
     @Override
     public NavigableVector<T> row(Integer row) {
@@ -72,7 +122,13 @@ public class NavigableVector<T> extends AbstractMatrix<Integer, T> {
         return new NavigableVector<>(rowMap, this.zero(), 1, this.getColumns());
     }
     
-    //returns column representation
+    
+    /** 
+     * Returns column representation of column i as a NavigableVector
+     * 
+     * @param column
+     * @return NavigableVector<T>
+     */
     @Override
     public NavigableVector<T> column(Integer column) {
         InvalidMatrixOperationException.requireValidVectorInput(new Indexes(this.size().row(), column), this.size());
