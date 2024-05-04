@@ -1,5 +1,9 @@
 package Matrix;
 
+/**
+ * Exception that ensures zeros of two matrices are matching
+ */
+
 public final class InconsistentZeroException extends Exception{
 
     private static final long serialVersionUID = 0123L;
