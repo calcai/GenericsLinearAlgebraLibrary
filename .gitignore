@@ -1,4 +1,7 @@
 build/
 report/
 doc/
-src/
+bin/
+.vscode/
+.DS_Store
+.gitignore
