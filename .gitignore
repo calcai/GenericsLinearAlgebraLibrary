@@ -1,7 +1,0 @@
-build/
-report/
-doc/
-bin/
-.vscode/
-.DS_Store
-.gitignore
